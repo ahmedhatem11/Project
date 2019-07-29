@@ -1,4 +1,4 @@
-package com.sumerge.program;
+package com.sumerge.program.rest.config;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
