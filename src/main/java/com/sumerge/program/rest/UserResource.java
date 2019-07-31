@@ -81,7 +81,7 @@ public class UserResource implements UserResourceInterface {
                         entity(user).
                         build();
             }
-        } catch (EJBTransactionRolledbackException e){
+        } catch (Exception e){
             return Response.serverError().entity("No User Found").build();
         }
     }
