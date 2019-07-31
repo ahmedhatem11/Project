@@ -38,6 +38,14 @@ public class GroupRepo {
         }
     }
 
+    public void addGroup(Group group){
+        try {
+            em.persist(group);
+        } catch (Exception e){
+            throw e;
+        }
+    }
+
     public void deleteGroup(Group group){
         try {
             group.setDeleted(true);
