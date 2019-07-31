@@ -6,13 +6,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "GROUP", schema = "USERMANAGEMENT")
-@NamedQueries(
-        @NamedQuery(name = "Group.findAll", query = "Select g from Group g where g.isDeleted = 0")
-)
+@NamedQueries({
+        @NamedQuery(name = "Group.findAll", query = "Select g from Group g where g.isDeleted = 0"),
+        @NamedQuery(name = "Group.findAllWithDeleted", query = "Select g from Group g"),
+        @NamedQuery(name = "Group.findGroupById", query = "Select g from Group g where g.id = :id")
+})
 public class Group implements Serializable {
 
     @Id
@@ -29,7 +32,7 @@ public class Group implements Serializable {
     @Column(name = "ISDELETED")
     private boolean isDeleted;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "USERGROUP", joinColumns = @JoinColumn(name = "GROUPID"), inverseJoinColumns = @JoinColumn(name = "USERID"))
     private List<User> users;
 
@@ -69,10 +72,26 @@ public class Group implements Serializable {
     }
 
     public List<User> getUsers() {
-        return users;
+        List<User> notDeletedUsers = new ArrayList<>();
+        for (User user : users){
+            if(!user.isDeleted())
+                notDeletedUsers.add(user);
+        }
+        return notDeletedUsers;
     }
 
     public void setUsers(List<User> users) {
         this.users = users;
+    }
+
+    @Override
+    public String toString() {
+        return "Group{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", isDeleted=" + isDeleted +
+                ", users=" + users +
+                '}';
     }
 }
