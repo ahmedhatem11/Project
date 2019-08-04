@@ -6694,3 +6694,9 @@
 2019-08-04 18:56:21 DEBUG cluster:122 - Checking status of localhost:27017
 2019-08-04 18:56:21 DEBUG cluster:122 - Updating cluster description to  {type=STANDALONE, servers=[{address=localhost:27017, type=STANDALONE, roundTripTime=2.3 ms, state=CONNECTED}]
 2019-08-04 18:56:21 DEBUG cluster:122 - Updating cluster description to  {type=STANDALONE, servers=[{address=localhost:27017, type=STANDALONE, roundTripTime=1.7 ms, state=CONNECTED}]
+2019-08-04 18:56:27 DEBUG cluster:122 - Checking status of localhost:27017
+2019-08-04 18:56:27 DEBUG cluster:122 - Updating cluster description to  {type=STANDALONE, servers=[{address=localhost:27017, type=STANDALONE, roundTripTime=1.6 ms, state=CONNECTED}]
+2019-08-04 18:56:31 DEBUG cluster:122 - Checking status of localhost:27017
+2019-08-04 18:56:31 DEBUG cluster:122 - Checking status of localhost:27017
+2019-08-04 18:56:31 DEBUG cluster:122 - Updating cluster description to  {type=STANDALONE, servers=[{address=localhost:27017, type=STANDALONE, roundTripTime=2.0 ms, state=CONNECTED}]
+2019-08-04 18:56:31 DEBUG cluster:122 - Updating cluster description to  {type=STANDALONE, servers=[{address=localhost:27017, type=STANDALONE, roundTripTime=1.5 ms, state=CONNECTED}]
