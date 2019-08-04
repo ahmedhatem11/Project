@@ -5,6 +5,8 @@ import com.sumerge.program.entities.GroupRepo;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.ws.rs.ForbiddenException;
+import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
@@ -21,12 +23,19 @@ public class GroupResource implements GroupResourceInterface{
     @Override
     public Response getAllGroups() {
         try {
+            if (securityContext.getUserPrincipal() == null){
+                throw new NotAuthorizedException("not logged in");
+            }
+
             return Response.ok().
                     entity(groupRepo.getAllGroups()).
                     build();
         } catch (Exception e) {
+            if (e.getClass().equals(NotAuthorizedException.class))
+                return Response.status(401).entity("Please log in to enter this page").build();
+
             return Response.serverError().
-                    entity(e).
+                    entity(e.getMessage()).
                     build();
         }
     }
@@ -34,12 +43,23 @@ public class GroupResource implements GroupResourceInterface{
     @Override
     public Response getAllGroupsWithDeleted() {
         try {
+            if (securityContext.getUserPrincipal() == null){
+                throw new NotAuthorizedException("not logged in");
+            }
+            if (!securityContext.isUserInRole("admin"))
+                throw new ForbiddenException("no access");
+
             return Response.ok().
                     entity(groupRepo.getAllGroupsWithDeleted()).
                     build();
         } catch (Exception e) {
+            if (e.getClass().equals(NotAuthorizedException.class))
+                return Response.status(401).entity("Please log in to enter this page").build();
+            if (e.getClass().equals(ForbiddenException.class))
+                return Response.status(403).entity("You can't access this page").build();
+
             return Response.serverError().
-                    entity(e).
+                    entity(e.getMessage()).
                     build();
         }
     }
@@ -47,12 +67,19 @@ public class GroupResource implements GroupResourceInterface{
     @Override
     public Response getGroupById(int id) {
         try {
+            if (securityContext.getUserPrincipal() == null){
+                throw new NotAuthorizedException("not logged in");
+            }
+
             return Response.ok().
                     entity(groupRepo.getGroupById(id)).
                     build();
         } catch (Exception e) {
+            if (e.getClass().equals(NotAuthorizedException.class))
+                return Response.status(401).entity("Please log in to enter this page").build();
+
             return Response.serverError().
-                    entity(e).
+                    entity(e.getMessage()).
                     build();
         }
     }
@@ -60,12 +87,26 @@ public class GroupResource implements GroupResourceInterface{
     @Override
     public Response addNewGroup(Group group) {
         try {
-            groupRepo.addGroup(group);
+            if (securityContext.getUserPrincipal() == null){
+                throw new NotAuthorizedException("not logged in");
+            }
+            if (!securityContext.isUserInRole("admin"))
+                throw new ForbiddenException("no access");
+
+            if(group.getName() == null)
+                throw new Exception("No name entered");
+
+            groupRepo.addGroup(group, securityContext.getUserPrincipal().toString());
             return Response.ok().
                     build();
         } catch (Exception e) {
+            if (e.getClass().equals(NotAuthorizedException.class))
+                return Response.status(401).entity("Please log in to enter this page").build();
+            if (e.getClass().equals(ForbiddenException.class))
+                return Response.status(403).entity("You can't access this page").build();
+
             return Response.serverError().
-                    entity(e).
+                    entity(e.getMessage()).
                     build();
         }
     }
@@ -73,13 +114,22 @@ public class GroupResource implements GroupResourceInterface{
     @Override
     public Response deleteGroup(Group group) {
         try {
-            int groupId = group.getId();
-            Group group2 = groupRepo.getGroupById(groupId);
-            groupRepo.deleteGroup(group2);
+            if (securityContext.getUserPrincipal() == null){
+                throw new NotAuthorizedException("not logged in");
+            }
+            if (!securityContext.isUserInRole("admin"))
+                throw new ForbiddenException("no access");
+
+            groupRepo.deleteGroup(group.getId(), securityContext.getUserPrincipal().toString());
             return Response.ok().build();
         }catch (Exception e){
+            if (e.getClass().equals(NotAuthorizedException.class))
+                return Response.status(401).entity("Please log in to enter this page").build();
+            if (e.getClass().equals(ForbiddenException.class))
+                return Response.status(403).entity("You can't access this page").build();
+
             return Response.serverError().
-                    entity(e).
+                    entity(e.getMessage()).
                     build();
         }
     }
@@ -87,13 +137,22 @@ public class GroupResource implements GroupResourceInterface{
     @Override
     public Response undoDeleteGroup(Group group) {
         try {
-            int groupId = group.getId();
-            Group group2 = groupRepo.getGroupById(groupId);
-            groupRepo.UndoDeleteGroup(group2);
+            if (securityContext.getUserPrincipal() == null){
+                throw new NotAuthorizedException("not logged in");
+            }
+            if (!securityContext.isUserInRole("admin"))
+                throw new ForbiddenException("no access");
+
+            groupRepo.UndoDeleteGroup(group.getId(), securityContext.getUserPrincipal().toString());
             return Response.ok().build();
         }catch (Exception e){
+            if (e.getClass().equals(NotAuthorizedException.class))
+                return Response.status(401).entity("Please log in to enter this page").build();
+            if (e.getClass().equals(ForbiddenException.class))
+                return Response.status(403).entity("You can't access this page").build();
+
             return Response.serverError().
-                    entity(e).
+                    entity(e.getMessage()).
                     build();
         }
     }

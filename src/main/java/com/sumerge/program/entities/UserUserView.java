@@ -1,5 +1,6 @@
 package com.sumerge.program.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserUserView {
@@ -14,12 +15,12 @@ public class UserUserView {
 
     private String role;
 
-    private List<String[]> groupNames;
+    private List<String> groupNames = new ArrayList<>();
 
     public UserUserView() {
     }
 
-    public UserUserView(String name, String email, String phoneNumber, String address, String role, List<String[]> groupNames) {
+    public UserUserView(String name, String email, String phoneNumber, String address, String role, List<String> groupNames) {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
@@ -68,11 +69,11 @@ public class UserUserView {
         this.role = role;
     }
 
-    public List<String[]> getGroupNames() {
+    public List<String> getGroupNames() {
         return groupNames;
     }
 
-    public void setGroupNames(List<String[]> groupNames) {
+    public void setGroupNames(List<String> groupNames) {
         this.groupNames = groupNames;
     }
 }

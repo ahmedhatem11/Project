@@ -11,6 +11,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Path("/group")
 @RequestScoped
 @Produces(APPLICATION_JSON)
+@Consumes(APPLICATION_JSON)
 public interface GroupResourceInterface {
 
     @GET

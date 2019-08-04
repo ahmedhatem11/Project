@@ -1,11 +1,17 @@
 package com.sumerge.program.inputModels;
 
-public class changeGroupInputModel {
+public class ChangeGroupInputModel {
     private String username;
     private int oldGroup;
     private int newGroup;
 
-    public changeGroupInputModel() {
+    public ChangeGroupInputModel() {
+    }
+
+    public ChangeGroupInputModel(String username, int oldGroup, int newGroup) {
+        this.username = username;
+        this.oldGroup = oldGroup;
+        this.newGroup = newGroup;
     }
 
     public String getUsername() {

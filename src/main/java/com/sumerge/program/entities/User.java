@@ -1,8 +1,6 @@
 package com.sumerge.program.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sun.tools.javac.util.Pair;
-
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -14,10 +12,7 @@ import java.util.List;
 @NamedQueries({
         @NamedQuery(name = "User.findAllAvaialbleUsers", query = "Select u from User u where u.isDeleted = 0"),
         @NamedQuery(name = "User.findAllUsersWithDeleted", query = "Select u from User u"),
-        @NamedQuery(name = "User.changePassword", query = "Update User Set password = :newPassword Where username = :username and password = :oldPassword"),
-        @NamedQuery(name = "User.findUserWithUsername", query = "Select u from User u where u.username = :username"),
-        @NamedQuery(name = "User.findById", query = "Select u from User u where u.id = :id")
-//        @NamedQuery(name = "User.changeGroup", query = "Update UserGroup Set GroupID = :newGroup Where username = :username and groupID = :oldGroup")
+        @NamedQuery(name = "User.findUserWithUsername", query = "Select u from User u where u.username = :username")
 })
 public class User implements Serializable {
 
@@ -53,15 +48,15 @@ public class User implements Serializable {
     @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "USERGROUP", joinColumns = @JoinColumn(name = "USERID"), inverseJoinColumns = @JoinColumn(name = "GROUPID"))
-    private List<Group> groups;
+    private List<Group> groups = new ArrayList<>();
 
     @Transient
-    private List<String[]> groupNames;
+    private List<String> groupNames = new ArrayList<>();
 
     public User() {
     }
 
-    public User(int id, String username, String password, String name, String email, String phoneNumber, String address, String role, boolean isDeleted, List<Group> groups, List<String[]> groupNames) {
+    public User(int id, String username, String password, String name, String email, String phoneNumber, String address, String role, boolean isDeleted, List<Group> groups, List<String> groupNames) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -73,6 +68,19 @@ public class User implements Serializable {
         this.isDeleted = isDeleted;
         this.groups = groups;
         this.groupNames = groupNames;
+    }
+
+    public User(String username, String password, String name, String email, String phoneNumber, String address, String role) {
+        this.username = username;
+        this.password = password;
+        this.name = name;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.role = role;
+        this.isDeleted = false;
+        this.groups = new ArrayList<>();
+        this.groupNames = new ArrayList<>();
     }
 
     public int getId() {
@@ -157,38 +165,33 @@ public class User implements Serializable {
         this.groups = groups;
     }
 
-    public List<String[]> getGroupNames() {
+    public List<String> getGroupNames() {
 
-        List<String[] > result = new ArrayList<>();
+        List<String> result = new ArrayList<>();
         for(Group group : groups){
             if (!group.isDeleted()){
-                String[] pair = new String[2];
-                pair[0] = group.getId() + "";
-                pair[1] = group.getName();
-                result.add(pair);
+                result.add("{\nGroup Id: " + group.getId() + "\n" + "Group Name: " + group.getName() +"\n}");
             }
         }
         return result;
     }
 
-    public void setGroupNames(List<String[]> groupNames) {
+    public void setGroupNames(List<String> groupNames) {
         this.groupNames = groupNames;
     }
 
     @Override
     public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", address='" + address + '\'' +
-                ", role='" + role + '\'' +
-                ", isDeleted=" + isDeleted +
-                ", groups=" + groups +
-                ", groupNames=" + groupNames +
+        return "{" + '\n' +
+                "id=" + id + ",\n" +
+                "username='" + username + ",\n" +
+                "name='" + name + ",\n" +
+                "email='" + email + ",\n" +
+                "phoneNumber='" + phoneNumber + ",\n" +
+                "address='" + address + ",\n" +
+                "role='" + role + ",\n" +
+                "isDeleted=" + isDeleted + ",\n" +
+                "groupNames=" + groupNames.toString() + "\n" +
                 '}';
     }
 }

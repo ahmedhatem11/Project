@@ -5,13 +5,13 @@ swarm:
         login-config:
           auth-method: BASIC
           security-domain: my-domain
-        security-constraints:
-          - url-pattern: /*
-            methods: [GET, POST, PUT, DELETE]
-            roles: [admin]
-          - url-pattern: /*
-            methods: [GET]
-            roles: [user]
+#        security-constraints:
+#          - url-pattern: /*
+#            methods: [GET, POST, PUT, DELETE]
+#            roles: [admin]
+#          - url-pattern: /*
+#            methods: [GET, PUT]
+#            roles: [user]
   security:
     security-domains:
       my-domain:

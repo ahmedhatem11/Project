@@ -1,5 +1,6 @@
 package com.sumerge.program.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AdminUserView {
@@ -20,12 +21,12 @@ public class AdminUserView {
 
     private boolean isDeleted;
 
-    private List<String[]> groupNames;
+    private List<String> groupNames = new ArrayList<>();
 
     public AdminUserView() {
     }
 
-    public AdminUserView(int id, String username, String name, String email, String phoneNumber, String address, String role, boolean isDeleted, List<String[]> groupNames) {
+    public AdminUserView(int id, String username, String name, String email, String phoneNumber, String address, String role, boolean isDeleted, List<String> groupNames) {
         this.id = id;
         this.username = username;
         this.name = name;
@@ -101,11 +102,11 @@ public class AdminUserView {
         isDeleted = deleted;
     }
 
-    public List<String[]> getGroupNames() {
+    public List<String> getGroupNames() {
         return groupNames;
     }
 
-    public void setGroupNames(List<String[]> groupNames) {
+    public void setGroupNames(List<String> groupNames) {
         this.groupNames = groupNames;
     }
 }

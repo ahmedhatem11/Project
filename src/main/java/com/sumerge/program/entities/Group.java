@@ -13,8 +13,7 @@ import java.util.List;
 @Table(name = "GROUP", schema = "USERMANAGEMENT")
 @NamedQueries({
         @NamedQuery(name = "Group.findAll", query = "Select g from Group g where g.isDeleted = 0"),
-        @NamedQuery(name = "Group.findAllWithDeleted", query = "Select g from Group g"),
-        @NamedQuery(name = "Group.findGroupById", query = "Select g from Group g where g.id = :id")
+        @NamedQuery(name = "Group.findAllWithDeleted", query = "Select g from Group g")
 })
 public class Group implements Serializable {
 
@@ -34,9 +33,21 @@ public class Group implements Serializable {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "USERGROUP", joinColumns = @JoinColumn(name = "GROUPID"), inverseJoinColumns = @JoinColumn(name = "USERID"))
-    private List<User> users;
+    private List<User> users = new ArrayList<>();
 
     public Group() {
+    }
+
+    public Group(int id, String name, String description) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+    }
+
+    public Group(String name, String description) {
+        this.name = name;
+        this.description = description;
+        this.users = new ArrayList<>();
     }
 
     public int getId() {
@@ -86,12 +97,12 @@ public class Group implements Serializable {
 
     @Override
     public String toString() {
-        return "Group{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", isDeleted=" + isDeleted +
-                ", users=" + users +
+        return "{\n" +
+                "id=" + id + "\n," +
+                "name='" + name + "\n," +
+                "description='" + description + "\n," +
+                "isDeleted=" + isDeleted + "\n," +
+                "users=" + users + "\n" +
                 '}';
     }
 }

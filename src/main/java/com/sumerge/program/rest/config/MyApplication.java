@@ -1,5 +1,6 @@
 package com.sumerge.program.rest.config;
 
+import com.sumerge.program.rest.AuditLogResource;
 import com.sumerge.program.rest.GroupResource;
 import com.sumerge.program.rest.UserResource;
 
@@ -15,6 +16,7 @@ public class MyApplication extends javax.ws.rs.core.Application {
         Set<Class<?>> classes = new HashSet<>();
         classes.add(UserResource.class);
         classes.add(GroupResource.class);
+        classes.add(AuditLogResource.class);
         return classes;
     }
 }

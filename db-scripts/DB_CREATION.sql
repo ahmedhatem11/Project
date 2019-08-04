@@ -114,4 +114,6 @@ insert into USERMANAGEMENT.USER (ID, USERNAME, EMAIL, PASSWORD, NAME, ROLE, PHON
 
 insert into USERMANAGEMENT.GROUP (ID, NAME, DESCRIPTION) values(1, 'default_group', 'default group (cannot be deleted');
 
+insert into USERMANAGEMENT.GROUP (ID, NAME, DESCRIPTION) values(2, 'group 1', 'normal group');
+
 insert into USERMANAGEMENT.USERGROUP values(1,1,1,0);

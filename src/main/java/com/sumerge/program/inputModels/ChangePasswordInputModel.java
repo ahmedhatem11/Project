@@ -1,10 +1,15 @@
 package com.sumerge.program.inputModels;
 
-public class changePasswordInputModel {
+public class ChangePasswordInputModel {
     private String oldPassword;
     private String newPassword;
 
-    public changePasswordInputModel() {
+    public ChangePasswordInputModel() {
+    }
+
+    public ChangePasswordInputModel(String oldPassword, String newPassword) {
+        this.oldPassword = oldPassword;
+        this.newPassword = newPassword;
     }
 
     public String getOldPassword() {
