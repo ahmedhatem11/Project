@@ -105,6 +105,9 @@ public class GroupResourceTest {
         Response response = client.deleteGroup(new Group(2, null, null));
         assertTrue("Error in function", response.getStatus() == 200);
 
+        Response response4 = client.deleteGroup(new Group(1, null, null));
+        assertTrue("Error in function", response4.getStatus() == 500);
+
         Response response2 = client.deleteGroup(new Group(2, null, null));
         assertTrue("Error in function", response2.getStatus() == 500);
 

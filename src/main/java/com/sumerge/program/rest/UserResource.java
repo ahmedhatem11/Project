@@ -276,6 +276,11 @@ public class UserResource implements UserResourceInterface {
     public Response changeForgottenPassowrd(ForgetPasswordInputModel model) {
         try {
             logger.info("entering function changeForgottenPassowrd()");
+
+            if (model.getUsername().equals("default_admin")){
+                throw new Exception("default admin password can't be changed");
+            }
+
             if (model.getNewPassword().equals("") || model.getNewPassword() == null){
                 throw new Exception("Please enter a new password");
             }

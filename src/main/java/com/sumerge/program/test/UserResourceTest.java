@@ -156,6 +156,9 @@ public class UserResourceTest {
 
         Response response3 = client.removeUserFromGroup(new AddRemoveGroupInputModel("user", 0));
         assertTrue("Error in function", response3.getStatus() == 500);
+
+        Response response4 = client.removeUserFromGroup(new AddRemoveGroupInputModel("default_admin", 1));
+        assertTrue("Error in function", response4.getStatus() == 500);
     }
 
     @Test
@@ -166,17 +169,20 @@ public class UserResourceTest {
 
         client.addUserToGroup(new AddRemoveGroupInputModel("user", 1));
 
-        Response response = client.changeUserGroup(new ChangeGroupInputModel("user",1,2));
-        assertTrue("Error in function", response.getStatus() == 200);
+        Response response = client.changeUserGroup(new ChangeGroupInputModel("user",1, 2));
+        assertTrue("Error in function 1", response.getStatus() == 200);
 
-        Response response2 = client.changeUserGroup(new ChangeGroupInputModel("user",2,1));
-        assertTrue("Error in function", response2.getStatus() == 500);
+        Response response5 = client.changeUserGroup(new ChangeGroupInputModel("default_admin",1,2));
+        assertTrue("Error in function 2", response5.getStatus() == 500);
+
+        Response response2 = client.changeUserGroup(new ChangeGroupInputModel("user",1,2));
+        assertTrue("Error in function 3", response2.getStatus() == 500);
 
         Response response3 = client.changeUserGroup(new ChangeGroupInputModel("user",0,2));
-        assertTrue("Error in function", response3.getStatus() == 500);
+        assertTrue("Error in function 4", response3.getStatus() == 500);
 
         Response response4 = client.changeUserGroup(new ChangeGroupInputModel("user",2,0));
-        assertTrue("Error in function", response4.getStatus() == 500);
+        assertTrue("Error in function 5", response4.getStatus() == 500);
 
     }
 
@@ -190,6 +196,13 @@ public class UserResourceTest {
 
         Response response2 = client.updateUserInfo(new User("user",null, null, "default_admin@usermail.com", null, "shorouk", "user"));
         assertTrue("Error in function", response2.getStatus() == 500);
+
+        String auth2 = "Basic " + Base64Utility.encode(("default_admin:123").getBytes());
+        WebClient.client(client).reset();
+        WebClient.client(client).header("Authorization", auth2);
+        Response response3 = client.updateUserInfo(new User("default_admin",null, null, null, null, "shorouk", "user"));
+        assertTrue("Error in function", response3.getStatus() == 500);
+
     }
 
     @Test
@@ -203,11 +216,14 @@ public class UserResourceTest {
         Response response2 = client.deleteUser(new User("user",null, null, null, null, null, "user"));
         assertTrue("Error in function", response2.getStatus() == 500);
 
+        Response response3 = client.deleteUser(new User("default_admin",null, null, null, null, null, null));
+        assertTrue("Error in function", response3.getStatus() == 500);
+
         String auth2 = "Basic " + Base64Utility.encode(("user:123").getBytes());
         WebClient.client(client).reset();
         WebClient.client(client).header("Authorization", auth2);
-        Response response3 = client.deleteUser(new User("user",null, null, null, null, null, "user"));
-        assertTrue("Error in function", response3.getStatus() == 403);
+        Response response4 = client.deleteUser(new User("user",null, null, null, null, null, "user"));
+        assertTrue("Error in function", response4.getStatus() == 403);
 
     }
 

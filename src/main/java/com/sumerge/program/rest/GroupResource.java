@@ -146,6 +146,10 @@ public class GroupResource implements GroupResourceInterface{
             if (!securityContext.isUserInRole("admin"))
                 throw new ForbiddenException("no access");
 
+            if (group.getId() == 1){
+                throw new Exception("default group can't be deleted");
+            }
+
             groupRepo.deleteGroup(group.getId(), securityContext.getUserPrincipal().toString());
 
             logger.info("deleteGroup() deleted a group");
