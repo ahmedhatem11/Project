@@ -1,6 +1,5 @@
 package com.sumerge.program.rest;
 
-import com.mongodb.*;
 import com.sumerge.program.entities.AdminUserView;
 import com.sumerge.program.entities.User;
 import com.sumerge.program.entities.UserRepo;
@@ -41,29 +40,33 @@ public class UserResource implements UserResourceInterface {
 
     final static Logger logger = Logger.getLogger(UserResource.class);
 
-
     @Override
     public Response getAllUsers() {
         try {
-            logger.debug("Entering getAllUser()");
+            logger.info("Entering getAllUser()");
             if (securityContext.getUserPrincipal() == null){
                 throw new NotAuthorizedException("not logged in");
             }
+
             if(securityContext.isUserInRole("admin")){
                 List<AdminUserView> users = userRepo.getAllUsersAdminView();
+
+                logger.info("List of users returned to client");
                 return Response.ok().
                         entity(users).
                         build();
             }
             else {
                 List<UserUserView> users = userRepo.getAllUsersUserView();
+
+                logger.info("List of users returned to client");
                 return Response.ok().
                         entity(users).
                         build();
             }
 
         } catch (Exception e) {
-
+            logger.info("Exception in function getAllUsers(): " + e.getMessage());
             if (e.getClass().equals(NotAuthorizedException.class))
                 return Response.status(401).entity("Please log in to enter this page").build();
             return Response.serverError().
@@ -75,17 +78,21 @@ public class UserResource implements UserResourceInterface {
     @Override
     public Response getAllUsersWithDeleted() {
         try {
+            logger.info("entering function getAllUsersWithDeleted()");
             if (securityContext.getUserPrincipal() == null){
                 throw new NotAuthorizedException("not logged in");
             }
             if (!securityContext.isUserInRole("admin"))
                 throw new ForbiddenException("no access");
 
+
             List<AdminUserView> users = userRepo.getAllUsersWithDeleted();
+            logger.info("getAllUsersWithDeleted() returned list of users");
             return Response.ok().
                     entity(users).
                     build();
         } catch (Exception e) {
+            logger.info("Exception in function getAllUsersWithDeleted(): " + e.getMessage());
             if (e.getClass().equals(NotAuthorizedException.class))
                 return Response.status(401).entity("Please log in to enter this page").build();
             if (e.getClass().equals(ForbiddenException.class))
@@ -100,23 +107,29 @@ public class UserResource implements UserResourceInterface {
     @Override
     public Response getUserByUsername(String username) {
         try {
+            logger.info("entering function getUserByUsername()");
             if (securityContext.getUserPrincipal() == null){
                 throw new NotAuthorizedException("not logged in");
             }
 
             if(securityContext.isUserInRole("admin")){
                 AdminUserView user = userRepo.getUserWithUsernameAdminView(username);
+
+                logger.info("getUserByUsername() returned a user");
                 return Response.ok().
                         entity(user).
                         build();
             }
             else {
                 UserUserView user = userRepo.getUserWithUsernameUserView(username);
+                logger.info("getUserByUsername() returned a user");
                 return Response.ok().
                         entity(user).
                         build();
             }
         } catch (Exception e){
+            logger.info("Exception in function getUserByUsername(): " + e.getMessage());
+
             if (e.getClass().equals(NotAuthorizedException.class))
                 return Response.status(401).entity("Please log in to enter this page").build();
 
@@ -127,23 +140,28 @@ public class UserResource implements UserResourceInterface {
     @Override
     public Response getUserById(int id) {
         try {
+            logger.info("entering function getUserByID()");
+
             if (securityContext.getUserPrincipal() == null){
                 throw new NotAuthorizedException("not logged in");
             }
 
             if(securityContext.isUserInRole("admin")){
                 AdminUserView user = userRepo.getUserWithIdAdminView(id);
+                logger.info("getUserByID() reutrned user");
                 return Response.ok().
                         entity(user).
                         build();
             }
             else {
                 UserUserView user = userRepo.getUserWithIdUserView(id);
+                logger.info("getUserByID() reutrned user");
                 return Response.ok().
                         entity(user).
                         build();
             }
         } catch (Exception e){
+            logger.info("Exception in function getUserByID(): " + e.getMessage());
             if (e.getClass().equals(NotAuthorizedException.class))
                 return Response.status(401).entity("Please log in to enter this page").build();
 
@@ -154,6 +172,7 @@ public class UserResource implements UserResourceInterface {
     @Override
     public Response changeUserPassword(ChangePasswordInputModel model) {
         try {
+            logger.info("entering function changeUserPassword()");
             if (securityContext.getUserPrincipal() == null){
                 throw new NotAuthorizedException("not logged in");
             }
@@ -173,6 +192,7 @@ public class UserResource implements UserResourceInterface {
             User user = userRepo.getUserWithUsername(username);
             if(user.getPassword().equals(model.getOldPassword())){
                 userRepo.changePassword(model, user, username);
+                logger.info("changeUserPassword() changed password successfully");
                 return Response.ok().
                         build();
             }
@@ -181,6 +201,7 @@ public class UserResource implements UserResourceInterface {
             }
 
         } catch (Exception e) {
+            logger.info("Exception in function changeUserPassword(): " + e.getMessage());
             if (e.getClass().equals(NotAuthorizedException.class))
                 return Response.status(401).entity("Please log in to enter this page").build();
 
@@ -194,6 +215,7 @@ public class UserResource implements UserResourceInterface {
     public Response forgetPassword(User user) {
 
         try {
+            logger.info("entering function forgetPassword()");
             if (user.getUsername() == null){
                 throw new Exception("Please enter a username");
             } else if (user.getUsername().equals("default_admin")){
@@ -237,9 +259,13 @@ public class UserResource implements UserResourceInterface {
             Transport.send(message);
             userRepo.changePassword(new ChangePasswordInputModel(user1.getPassword(), newPasswordHashed), user, "Reset Password System");
 
+            logger.info("forgetPassword() has sent a mail to the user");
+
             return Response.ok().
                     build();
         } catch (Exception e){
+            logger.info("Exception in function forgetPassword(): " + e.getMessage());
+
             return Response.serverError().
                     entity(e.getMessage()).
                     build();
@@ -249,7 +275,7 @@ public class UserResource implements UserResourceInterface {
     @Override
     public Response changeForgottenPassowrd(ForgetPasswordInputModel model) {
         try {
-
+            logger.info("entering function changeForgottenPassowrd()");
             if (model.getNewPassword().equals("") || model.getNewPassword() == null){
                 throw new Exception("Please enter a new password");
             }
@@ -258,6 +284,8 @@ public class UserResource implements UserResourceInterface {
             User user = userRepo.getUserWithUsername(model.getUsername());
             if(user.getPassword().equals(model.getOldPassword())){
                 userRepo.changePassword(new ChangePasswordInputModel(model.getOldPassword(), model.getNewPassword()), user, model.getUsername());
+
+                logger.info("changeForgottenPassowrd() user password changed");
                 return Response.ok().
                         build();
             }
@@ -266,6 +294,8 @@ public class UserResource implements UserResourceInterface {
             }
 
         } catch (Exception e) {
+            logger.info("Exception in function changeForgottenPassowrd(): " + e.getMessage());
+
             return Response.serverError().
                     entity(e.getMessage()).
                     build();
@@ -275,6 +305,8 @@ public class UserResource implements UserResourceInterface {
     @Override
     public Response addUserToGroup(AddRemoveGroupInputModel model) {
         try {
+            logger.info("entering function addUserToGroup()");
+
             if (securityContext.getUserPrincipal() == null){
                 throw new NotAuthorizedException("not logged in");
             }
@@ -284,10 +316,13 @@ public class UserResource implements UserResourceInterface {
             if (model.getUsername() == null)
                 throw new Exception("No username entered");
             userRepo.addUserToGroup(model, securityContext.getUserPrincipal().toString());
+            logger.info("addUserToGroup() added user to group");
             return Response.ok().
                     build();
 
         } catch (Exception e) {
+            logger.info("Exception in function addUserToGroup(): " + e.getMessage());
+
             if (e.getClass().equals(NotAuthorizedException.class))
                 return Response.status(401).entity("Please log in to enter this page").build();
             if (e.getClass().equals(ForbiddenException.class))
@@ -302,6 +337,8 @@ public class UserResource implements UserResourceInterface {
     @Override
     public Response removeUserFromGroup(AddRemoveGroupInputModel model) {
         try {
+            logger.info("entering function removeUserFromGroup()");
+
             if (securityContext.getUserPrincipal() == null){
                 throw new NotAuthorizedException("not logged in");
             }
@@ -316,10 +353,14 @@ public class UserResource implements UserResourceInterface {
             }
 
             userRepo.removeUserFromGroup(model, securityContext.getUserPrincipal().toString());
+
+
             return Response.ok().
                     build();
 
         } catch (Exception e) {
+            logger.info("Exception in function removeUserFromGroup(): " + e.getMessage());
+
             if (e.getClass().equals(NotAuthorizedException.class))
                 return Response.status(401).entity("Please log in to enter this page").build();
             if (e.getClass().equals(ForbiddenException.class))
@@ -334,6 +375,8 @@ public class UserResource implements UserResourceInterface {
     @Override
     public Response changeUserGroup(ChangeGroupInputModel model) {
         try {
+            logger.info("entering function changeUserGroup()");
+
             if (securityContext.getUserPrincipal() == null){
                 throw new NotAuthorizedException("not logged in");
             }
@@ -348,10 +391,14 @@ public class UserResource implements UserResourceInterface {
             }
 
             userRepo.changeUserGroup(model, securityContext.getUserPrincipal().toString());
+
+            logger.info("changeUserGroup() changed user group");
             return Response.ok().
                     build();
 
         } catch (Exception e) {
+            logger.info("Exception in function changeUserGroup(): " + e.getMessage());
+
             if (e.getClass().equals(NotAuthorizedException.class))
                 return Response.status(401).entity("Please log in to enter this page").build();
             if (e.getClass().equals(ForbiddenException.class))
@@ -366,6 +413,8 @@ public class UserResource implements UserResourceInterface {
     @Override
     public Response updateUserInfo(User user) {
         try {
+            logger.info("entering function updateUserInfo()");
+
             if (securityContext.getUserPrincipal() == null){
                 throw new NotAuthorizedException("not logged in");
             }
@@ -378,8 +427,12 @@ public class UserResource implements UserResourceInterface {
             }
 
             userRepo.updateUserInfo(user);
+
+            logger.info("updateUserInfo() updated the info of the user");
             return Response.ok().build();
         }catch (Exception e){
+            logger.info("Exception in function updateUserInfo(): " + e.getMessage());
+
             if (e.getClass().equals(NotAuthorizedException.class))
                 return Response.status(401).entity("Please log in to enter this page").build();
 
@@ -392,6 +445,8 @@ public class UserResource implements UserResourceInterface {
     @Override
     public Response newUser(User user) {
         try {
+            logger.info("entering function newUser()");
+
             if (securityContext.getUserPrincipal() == null){
                 throw new NotAuthorizedException("not logged in");
             }
@@ -411,8 +466,12 @@ public class UserResource implements UserResourceInterface {
 
             user.setPassword(hashString(user.getPassword()));
             userRepo.addNewUser(user, securityContext.getUserPrincipal().toString());
+
+            logger.info("newUser() added new user");
             return Response.ok().build();
         }catch (Exception e){
+            logger.info("Exception in function newUser(): " + e.getMessage());
+
             if (e.getClass().equals(NotAuthorizedException.class))
                 return Response.status(401).entity("Please log in to enter this page").build();
             if (e.getClass().equals(ForbiddenException.class))
@@ -427,6 +486,8 @@ public class UserResource implements UserResourceInterface {
     @Override
     public Response deleteUser(User user) {
         try {
+            logger.info("entering function deleteUser()");
+
             if (securityContext.getUserPrincipal() == null){
                 throw new NotAuthorizedException("not logged in");
             }
@@ -437,8 +498,12 @@ public class UserResource implements UserResourceInterface {
                 throw new Exception("default admin can't be deleted");
             }
             userRepo.deleteUser(user.getUsername(), securityContext.getUserPrincipal().toString());
+
+            logger.info("deleteUser() deleted the user");
             return Response.ok().build();
         }catch (Exception e){
+            logger.info("Exception in function deleteUser(): " + e.getMessage());
+
             if (e.getClass().equals(NotAuthorizedException.class))
                 return Response.status(401).entity("Please log in to enter this page").build();
             if (e.getClass().equals(ForbiddenException.class))
@@ -453,6 +518,8 @@ public class UserResource implements UserResourceInterface {
     @Override
     public Response undoDeleteUser(User user) {
         try {
+            logger.info("entering function undoDeleteUser()");
+
             if (securityContext.getUserPrincipal() == null){
                 throw new NotAuthorizedException("not logged in");
             }
@@ -460,8 +527,12 @@ public class UserResource implements UserResourceInterface {
                 throw new ForbiddenException("no access");
 
             userRepo.undoDeleteUser(user.getUsername(), securityContext.getUserPrincipal().toString());
+
+            logger.info("undoDeleteUser() got the user back");
             return Response.ok().build();
         }catch (Exception e){
+            logger.info("Exception in function undoDeleteUser(): " + e.getMessage());
+
             if (e.getClass().equals(NotAuthorizedException.class))
                 return Response.status(401).entity("Please log in to enter this page").build();
             if (e.getClass().equals(ForbiddenException.class))
